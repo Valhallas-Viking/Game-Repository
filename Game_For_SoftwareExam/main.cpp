@@ -4,15 +4,16 @@
 #include "Fight.h"
 #include "enemy.h"
 #include "database.h"
+#include "dungeon.h"
 #include <limits>
 int main()
 {
-
     Hero myHero;
     Database TheDatabase;
     TheDatabase.setupConnection();
     Enemy TheEnemy;
-    Fight TheFight(myHero, TheEnemy, TheDatabase);
+    Fight TheFight(myHero,TheEnemy, TheDatabase);
+    Dungeon TheDungeon(TheEnemy,TheDatabase,TheFight,myHero);
     int Input;
     int Input2;
     TheDatabase.LoadEnemies(TheDatabase);
@@ -34,7 +35,6 @@ int main()
     std::cin.ignore();
     switch(Input){
     case 1:
-
             if(TheDatabase.HeroSave.size()>=3)
             {std::cout<<"One can only control 3 victims at once"; goto ERROR1;}
             std::cout<<"NAME: ";
@@ -92,14 +92,8 @@ int main()
     {
      goto ERROR1;
     };
-    std::cout<<"As the ratlike creature lies dead in front of you you snap out of your dizzy trancelike state\n You realise that despite being on death's door moments before you're completely unscathed\n As you stand up you see on your nightstand a book titled \"Necronomicon\" which entails\n all manner of information on the grotesque monsters of this newly discovered state you're in.\n As you read the book you begin to see visages of the written abominations:";
+    std::cout<<"As the ratlike creature lies dead in front of you you snap out of your dizzy trancelike state\n You realise that despite being on death's door moments before you're completely unscathed\n As you stand up you see on your nightstand a book titled \"Necronomicon\" which entails\n all manner of information on the grotesque monsters of this newly discovered state you're in.\n As you read the book you begin to see visages of the written abominable and arcane information:";
     MainGame:
-    TheFight.ChooseFight(TheEnemy,TheDatabase);
-    if(TheFight.DidWin==false)
-    {
-     goto ERROR1;
-    };
-    if(TheFight.WantToQuit==true){goto ERROR1;}
-    goto MainGame;
-    return 0;
+    TheDungeon.ChooseDungeon();
+    goto ERROR1;
 }

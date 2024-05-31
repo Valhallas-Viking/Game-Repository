@@ -1,5 +1,6 @@
 #ifndef FIGHT_H
 #define FIGHT_H
+#include <iostream>
 #include "enemy.h"
 #include "hero.h"
 #include "database.h"
@@ -48,26 +49,27 @@ public:
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
     }
-    void ChooseFight(Enemy &Enemy, Database &TheDatabase)
+    void ChooseFight(Enemy &Enemy, Database &TheDatabase, std::vector<std::vector<int>> EnemiesUsed, std::vector<std::string> EnemyTypes)
     {
     std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
     std::cout<<"\nINPUT NUMBER OF DESIRED ENEMY:\n";
-    for(int i=0;i<=TheDatabase.EnemiesLoaded.size()-1;i++)
+    for(int i=0;i<=6;i++)
     {
-    std::cout<< i+1 <<". "<< TheDatabase.EnemyTypes[i] <<" . HP: "<<TheDatabase.EnemiesLoaded[i][1]<<". DMG: "<<TheDatabase.EnemiesLoaded[i][2]<<". EXP: "<<TheDatabase.EnemiesLoaded[i][3]<<". Gold "<<TheDatabase.EnemiesLoaded[i][4]<<".\n";
+    std::cout<< i+1 <<". "<< EnemyTypes[i] <<" . HP: "<<EnemiesUsed[i][1]<<". DMG: "<<EnemiesUsed[i][2]<<". EXP: "<<EnemiesUsed[i][3]<<". Gold "<<EnemiesUsed[i][4]<<".\n";
     }
-    std::cout<<"INPUT \"0\" TO QUIT TO MENU\n";
+    WantToQuit=false;
+    std::cout<<"INPUT \"0\" TO EXIT AREA HOUSE\n";
     int E;
     std::cin>>E;
-    if(E==0|isdigit(E)!=true){WantToQuit=true; goto Quitting;}
+    if(E==0){WantToQuit=true; goto Quitting;}
+    if(E>5){std::cout<<"INVALID INDEX"; goto Quitting;};
     FightEnemy.GetStats(Enemy, TheDatabase, E-1);
-    std::cin.clear();
-    std::cin.ignore();
     CurrentlyFighting(FightHero, FightEnemy);
     Quitting:
     ;
     };
-private:
+    private:
     Enemy& FightEnemy;
     Hero& FightHero;
     Database& TheDatabase;

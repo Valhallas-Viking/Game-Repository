@@ -34,7 +34,7 @@ public:
     };
     void UpdateHero(Database &TheDatabase)
     {
-        ID=TheDatabase.Save;
+        ID=TheDatabase.HeroStats[0];
         TheDatabase.UpdateHero(LV,EXP,Gold,ID);
         DefineBasics();
     };
@@ -95,13 +95,16 @@ public:
         TheDatabase.LoadHeroes(TheDatabase);
         HeroName=TheDatabase.HeroNames;
         TheHero=TheDatabase.HeroSave;
-        for(int s=0; s<=TheDatabase.AmountOfSaves();s++)
+        if(TheHero.size()==0){std::cout<<"\nNO VICTIMS MANIFEST ONE (No saves make a new one)\n"; goto Invalid;}
+        for(int s=0; s<=TheHero.size()-1;s++)
         {
          std::cout<<s+1;
             {
             std::cout<<": Name: "<<HeroName[s]<<". Level: "<<TheHero[s][1]<<". EXP: "<<TheHero[s][2]<<". Gold: "<<TheHero[s][3]<<".\n";
             }
         }
+        Invalid:
+        ;
     };
 private:
 

@@ -10,7 +10,9 @@ add_executable(Game_For_SoftwareExam
     database.h
     hero.h
     Fight.h
-    enemy.h)
+    enemy.h
+    dungeon.h
+    )
 
 target_link_libraries(Game_For_SoftwareExam
     PRIVATE

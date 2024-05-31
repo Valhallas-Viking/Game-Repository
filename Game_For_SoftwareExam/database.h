@@ -23,13 +23,14 @@ public:
         _db = QSqlDatabase::addDatabase("QMYSQL");
         _db.setHostName("localhost");
         _db.setDatabaseName("Game");
-        _db.setUserName("root");  // Use the appropriate username
-        _db.setPassword("password");  // Use the correct password
+        _db.setUserName("root");
+        _db.setPassword("password");
         if (!_db.open()) {
             qDebug() << "Failed to open the database:" << _db.lastError().text();
         }
     }
     std::string Type;
+    int DungeonEnemyID;
     int EnemyAmount=0;
     int ID;
     int HP;
@@ -40,6 +41,8 @@ public:
     int LV;
     int PlayerEXP;
     int PlayerGold;
+    int Progress;
+    int DungeonID;
     std::string PlayerName;
     std::vector<std::string> HeroNames;
     std::vector<int> EnemyStats;
@@ -48,6 +51,10 @@ public:
     std::vector<std::string> HeroName;
     std::vector<std::vector<int>> HeroSave;
     std::vector<int> HeroStats;
+    std::vector<int> CurrentProgress;
+    std::vector<std::vector<int>>InDungeon;
+    std::vector<std::vector<std::vector<int>>> HerosProgress;
+
     void LoadEnemies(Database &Database) {
         QSqlQuery query(_db);
         if (query.exec("SELECT * FROM Enemies")) {
@@ -86,17 +93,30 @@ public:
         query.prepare("DELETE FROM HERO WHERE id_Hero=:id_hero");
         query.bindValue(":id_hero",HeroSave[Save][0]);
         HeroNames.erase(HeroNames.begin()+Save);
+        DeleteProgress(HeroSave[Save][0],Save);
         if(!query.exec())
         {
             qDebug()<<"Selected invalid ID exitting to menu"<<query.lastError().text(); break;
         }
         else
         {
+            if(Save>HeroSave.size()-1){break;};
             std::cout<<HeroNames[Save]<<" Has drawn their last breath";
+            HeroSave.erase(HeroSave.begin()+Save);
             goto Reset;
         }
         }while(true);
     }
+    void DeleteProgress(int HeroID, int WhichHero)
+    {
+        QSqlQuery query(_db);
+        query.prepare("DELETE FROM Progress WHERE id_Hero=:id_hero");
+        query.bindValue(":id_hero",HeroID);
+        if(!query.exec())
+        {
+            qDebug()<<"ERROR DELETING PROGRESS"<<query.lastError().text();
+        }
+    };
     void MakeHero(Database,std::string HeroName, int EXP, int LV, int Gold)
     {
         QSqlQuery query(_db);
@@ -107,13 +127,47 @@ public:
         query.addBindValue(Gold);
         if (!query.exec()) {
                 qDebug() << "Hero creation Query failed:" << query.lastError().text();
-            } else {
-                qDebug() << "Hero created successfully!";
-            }
+                return;
+                 }
+        MakeProgress(ReadID());
+
     };
+    int ReadID() {
+        int ID;
+        QSqlQuery query(_db);
+        query.prepare("SELECT id_Hero FROM HERO ORDER BY id_Hero DESC LIMIT 1");
+
+        if (!query.exec()) {
+            qDebug() << "Failed to execute query:" << query.lastError().text();
+            return -1;
+        }
+        if (query.next()) {
+            ID = query.value(0).toInt();
+            return ID;
+        } else {
+            qDebug() << "No record fetched";
+            return -1; // Return an error code if no record is fetched
+        }
+    }
+    void MakeProgress(int HeroID) {
+        QSqlQuery query(_db);
+        for (int i = 0; i <= 2; ++i) {
+            query.prepare("INSERT INTO Progress (id_Hero, DungeonID, Progress) Values (?, ?, ?)");
+            query.addBindValue(HeroID);
+            query.addBindValue(i);
+            query.addBindValue(0);
+
+            if (!query.exec()) {
+                qDebug() << "Hero creation Query failed:" << query.lastError().text();
+            }
+            query.clear(); // Clear the previous bindings if reusing the query object
+        }
+    }
+
     void UpdateHero(int LV, int EXP, int Gold, int Save)
     {
         QSqlQuery query(_db);
+        query.exec("SELECT id_Hero FROM HERO");
         query.prepare("UPDATE HERO SET LV= :newLv, XP = :newExp, Gold = :newGold WHERE id_Hero=:idHero");
         query.bindValue(":newLv", LV);
         query.bindValue(":newExp", EXP);
@@ -132,7 +186,7 @@ public:
         QSqlQuery query(_db);
         HeroNames.clear();
         HeroSave.clear();
-        if (query.exec("SELECT * FROM HERO")) {
+        query.exec("SELECT * FROM HERO");{
             while (query.next()) {
                 Save = query.value(0).toInt();
                 PlayerName = query.value(1).toString().toStdString();
@@ -146,26 +200,31 @@ public:
                 HeroNames.push_back(PlayerName);
                 HeroSave.push_back(HeroStats);
                 HeroStats.clear();
-                                  }
-        } else {
-            qDebug() << " Hero Load query failed:" << query.lastError().text();
+            }
+
+        }
+        if(!query.exec())
+        {
+            qDebug()<<"SAVES NOT LOADED FATAL ERROR";
         }
     }
-    int AmountOfSaves()
+    void LoadDungeon()
     {
         QSqlQuery query(_db);
-        query.prepare("Select COUNT(*) FROM HERO");
-        if (!query.exec())
-        {
-            qDebug()<<" Load Save query failed:"<<query.lastError().text();
-            return -1;
+        query.exec("SELECT * FROM Dungeon");{
+            while(query.next()){
+                CurrentProgress[query.value(5).toInt()]=query.value(4).toInt();
+                InDungeon[query.value(0).toInt()];
+            }
         }
-        int count=0;
-        if (query.next())
-        {
-            count=query.value(0).toInt();
+    };
+    void UpdateProgress(int WhichDungeon)
+    {
+        QSqlQuery query(_db);
+        query.exec("UPDATE Progress SET Progress=:NewProgress Where DungeonID=:CurrentDungeon");{
+            query.bindValue(":NewProgress",Progress+1);
+            query.bindValue(":CurrentDungeon",WhichDungeon);
         }
-        return count-1;
     };
 private:
     QSqlDatabase _db;
