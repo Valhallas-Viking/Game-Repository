@@ -85,7 +85,6 @@ public:
     {
         int Save;
         do{
-        Reset:
         std::cout<<"\nINPUT \"0\" TO QUIT TO MENU\nCHOOSE YOUR SACREFICE(delete save) BY INPUTTING INDEX: ";
         if(HeroSave.size()==0){std::cout<<"\nNO SACREFICES TO BE MADE (There are no saves)\n";break;};
         std::cin>>Save;
@@ -94,7 +93,6 @@ public:
         QSqlQuery query(_db);
         query.prepare("DELETE FROM HERO WHERE id_Hero=:id_hero");
         query.bindValue(":id_hero",HeroSave[Save][0]);
-        HeroNames.erase(HeroNames.begin()+Save);
         DeleteProgress(HeroSave[Save][0],Save);
         if(!query.exec())
         {
@@ -105,7 +103,7 @@ public:
             if(Save>HeroSave.size()-1){break;};
             std::cout<<HeroNames[Save]<<" Has drawn their last breath";
             HeroSave.erase(HeroSave.begin()+Save);
-            goto Reset;
+            break;
         }
         }while(true);
     }
@@ -148,7 +146,7 @@ public:
             return ID;
         } else {
             qDebug() << "No record fetched";
-            return -1; // Return an error code if no record is fetched
+            return -1;
         }
     }
     void MakeProgress(int HeroID) {
@@ -177,7 +175,7 @@ public:
         query.bindValue(":idHero", Save);
         if(!query.exec())
         {
-            qDebug()<<"Update of Hero failed:"<<query.lastError().text();
+            qDebug()<<"Update of save failed:"<<query.lastError().text();
         }
         else
         {
@@ -207,15 +205,20 @@ public:
         }
         if(!query.exec())
         {
-            qDebug()<<"SAVES NOT LOADED FATAL ERROR";
+            qDebug()<<"ERROR SAVES NOT LOADED";
         }
     };
-    void UpdateProgress(int WhichDungeon)
+    void UpdateProgress(Database,int Dungeon)
     {
         QSqlQuery query(_db);
-        query.exec("UPDATE Progress SET Progress=:NewProgress Where DungeonID=:CurrentDungeon");{
+        query.prepare("UPDATE Progress SET Progress=:NewProgress Where DungeonID=:CurrentDungeon AND id_Hero=:idhero");{
             query.bindValue(":NewProgress",Progress+1);
-            query.bindValue(":CurrentDungeon",WhichDungeon);
+            query.bindValue(":idhero", HeroStats[0]);
+            query.bindValue(":CurrentDungeon",Dungeon);
+            if(!query.exec())
+            {
+                qDebug()<<"ERROR UPDATING PROGRESS FAILED: "<<query.lastError().text();
+            };
         }
     };
     void LoadDungeonEnemies(Database)
@@ -239,6 +242,22 @@ public:
         InDungeon.push_back(HerosProgress);
         DungeonEnemyTypes.push_back(DungeonEnemyType);
       }
+    };
+    void GetProgress(Database,int Dungeon)
+    {
+        QSqlQuery query(_db);
+            query.prepare("SELECT Progress From Progress WHERE DungeonID=:dungeonid");
+            query.bindValue(":dungeonid", Dungeon);
+
+            if (query.exec()) {
+                if (query.next()) {  // Position the query on the first result record
+                    Progress = query.value(0).toInt();
+                } else {
+                    qDebug() << "No records found for DungeonID:" << Dungeon;
+                }
+            } else {
+                qDebug() << "SettingProgress Failed" << query.lastError().text();
+            }
     };
 private:
     QSqlDatabase _db;

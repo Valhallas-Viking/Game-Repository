@@ -19,10 +19,10 @@ int main()
     TheDatabase.LoadEnemies(TheDatabase);
     TheDatabase.LoadHeroes(TheDatabase);
     TheEnemy.GetStats(TheEnemy,TheDatabase, 0);
+    TheDatabase.LoadDungeonEnemies(TheDatabase);
     ERROR1:
     myHero.Indicator=0;
     TheDatabase.LoadHeroes(TheDatabase);
-    TheDatabase.LoadDungeonEnemies(TheDatabase);
     std::cout << R"(
          _    _      ______      ________ _____ _____            ______ _______   _____  _____  ______          __  __ _____ _   _  _____    _
       /\| |/\| |    / __ \ \    / /  ____/ ____|  __ \     /\   |  ____|__   __| |  __ \|  __ \|  ____|   /\   |  \/  |_   _| \ | |/ ____|/\| |/\
@@ -78,9 +78,8 @@ int main()
         break;
     };
     Start_Of_Game:
-    myHero.LVUP();
+    myHero.LVUP(myHero);
     std::cin.clear();
-    std::cin.ignore();
     int pauseInput;
     std::cout<<"You awaken in a strange room... although it is not unfamiliar to you as it is your room... right?"<<std::endl<<"Of course it is... it's not that your room is different but more that you don't recognise it..."<<std::endl<<"Enter anything to continue"<<std::endl;
     std::cout<<"Suddenly something scurries out from under your bed and you begin to feel drowzy...\n *Press enter to continue*";
@@ -96,5 +95,6 @@ int main()
     std::cout<<"As the ratlike creature lies dead in front of you you snap out of your dizzy trancelike state\n You realise that despite being on death's door moments before you're completely unscathed\n As you stand up you see on your nightstand a book titled \"Necronomicon\" which entails\n all manner of information on the grotesque monsters of this newly discovered state you're in.\n As you read the book you begin to see visages of the written abominable and arcane information:";
     MainGame:
     TheDungeon.ChooseDungeon();
-    goto ERROR1;
+    if(TheDungeon.GoToMain==true|TheDungeon.DidWin==false){goto ERROR1;};
+    goto MainGame;
 }

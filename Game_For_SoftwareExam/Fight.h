@@ -32,7 +32,7 @@ public:
                 std::cout<<HeroFight.EXP<<" + "<<EnemyFight.EXP<<" = ";
                 HeroFight.EXP=HeroFight.EXP+EnemyFight.EXP;
                 std::cout<<HeroFight.EXP<<std::endl;
-                HeroFight.LVUP();
+                HeroFight.LVUP(HeroFight);
                 HeroFight.UpdateHero(TheDatabase);
                 break;
             }
@@ -47,7 +47,7 @@ public:
                 break;
             }
             std::cout<<"\nPress ENTER to continue";
-            if(IgnoreFix==true){std::cin.ignore();IgnoreFix=false;};
+            if(IgnoreFix==true&HeroFight.EXP!=0){std::cin.ignore();IgnoreFix=false;};
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
     }

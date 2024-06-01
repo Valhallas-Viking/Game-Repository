@@ -27,7 +27,7 @@ public:
     }
     void DefineBasics()
     {
-        DMG=1+(LV/2);
+        DMG=1+(LV/1.5);
         HP=10*LV;
         MaxHP=HP;
         totDMG=0;
@@ -38,12 +38,16 @@ public:
         TheDatabase.UpdateHero(LV,EXP,Gold,ID);
         DefineBasics();
     };
-    void LVUP()
+    void LVUP(Hero)
     {
-          if(LV*1000==EXP)
+          if(LV*1000<=EXP)
           {
+              DoubleLV:
               EXP=EXP-LV*1000;
               LV++;
+              std::cout<<"LEVEL UP!\nLevel "<<LV<<" reached!\n";
+              if(LV*1000<=EXP)
+              {goto DoubleLV;}
           }
     };
     void NewHero(Database &TheDatabase)
@@ -79,6 +83,7 @@ public:
               goto TryAgain;
             };
             if(Entry>=TheHero.size()){Indicator=-1;goto EXIT;};
+            TheDatabase.HeroStats=TheHero[Entry];
             ID=TheHero[Entry][0];
             _name=HeroName[Entry];
             LV=TheHero[Entry][1];
