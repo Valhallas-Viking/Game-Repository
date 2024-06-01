@@ -18,6 +18,7 @@ public:
         FightHero.totDMG=0;
         FightEnemy.totDMG=0;
         FightHero.HP=FightHero.MaxHP;
+        bool IgnoreFix=true;
         while(true){
             std::cout<<std::endl<<HeroFight._name<<" attacks dealing "<<HeroFight.DMG<<" Damage\n";
             EnemyFight.totDMG=EnemyFight.totDMG+HeroFight.DMG;
@@ -46,6 +47,7 @@ public:
                 break;
             }
             std::cout<<"\nPress ENTER to continue";
+            if(IgnoreFix==true){std::cin.ignore();IgnoreFix=false;};
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         };
     }
@@ -63,7 +65,7 @@ public:
     int E;
     std::cin>>E;
     if(E==0){WantToQuit=true; goto Quitting;}
-    if(E>5){std::cout<<"INVALID INDEX"; goto Quitting;};
+    if(E>7){std::cout<<"INVALID INDEX"; goto Quitting;};
     FightEnemy.GetStats(Enemy, TheDatabase, E-1);
     CurrentlyFighting(FightHero, FightEnemy);
     Quitting:

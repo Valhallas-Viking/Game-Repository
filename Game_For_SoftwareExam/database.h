@@ -51,9 +51,11 @@ public:
     std::vector<std::string> HeroName;
     std::vector<std::vector<int>> HeroSave;
     std::vector<int> HeroStats;
-    std::vector<int> CurrentProgress;
-    std::vector<std::vector<int>>InDungeon;
-    std::vector<std::vector<std::vector<int>>> HerosProgress;
+    std::vector<int> CurrentEnemy;
+    std::vector<std::vector<int>>HerosProgress;
+    std::vector<std::vector<std::vector<int>>> InDungeon;
+    std::vector<std::vector<std::string>>DungeonEnemyTypes;
+    std::vector<std::string> DungeonEnemyType;
 
     void LoadEnemies(Database &Database) {
         QSqlQuery query(_db);
@@ -207,16 +209,6 @@ public:
         {
             qDebug()<<"SAVES NOT LOADED FATAL ERROR";
         }
-    }
-    void LoadDungeon()
-    {
-        QSqlQuery query(_db);
-        query.exec("SELECT * FROM Dungeon");{
-            while(query.next()){
-                CurrentProgress[query.value(5).toInt()]=query.value(4).toInt();
-                InDungeon[query.value(0).toInt()];
-            }
-        }
     };
     void UpdateProgress(int WhichDungeon)
     {
@@ -225,6 +217,28 @@ public:
             query.bindValue(":NewProgress",Progress+1);
             query.bindValue(":CurrentDungeon",WhichDungeon);
         }
+    };
+    void LoadDungeonEnemies(Database)
+    {
+        QSqlQuery query(_db);
+        for(int i=0;i<3;i++){//Too tired remember that the for loop is broken for tomorrow as the game has no way of knowing how big HerosProgress is gonna be
+        query.prepare("SELECT EnemyID FROM Dungeon where DungeonID = :dungeonid");
+        {
+            query.bindValue(":dungeonid",i);
+            if(query.exec())
+            {
+                while(query.next())
+                {
+                    int EnemyID = query.value(0).toInt()-1;
+                    HerosProgress.push_back(EnemiesLoaded[EnemyID]);
+                    DungeonEnemyType.push_back(EnemyTypes[EnemyID]);
+                }
+            }
+            else{qDebug()<<"LoadingDungeons Failed:"<<query.lastError().text();}
+        }
+        InDungeon.push_back(HerosProgress);
+        DungeonEnemyTypes.push_back(DungeonEnemyType);
+      }
     };
 private:
     QSqlDatabase _db;

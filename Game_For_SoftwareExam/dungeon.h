@@ -8,8 +8,10 @@
 class Dungeon
 {
 public:
-    bool WantToQuit;
     Dungeon(Enemy& enemy, Database& database, Fight& fight, Hero& hero):TheEnemy(enemy),TheDatabase(database),TheFight(fight), TheHero(hero){};
+    bool WantToQuit;
+    int TheDungeon;
+    int Progress;
     void DungeonFighting(Enemy &TheEnemy, Database &TheDatabase, std::vector<std::vector<int>> EnemiesUsed,std::vector<std::string> EnemyTypes, std::vector<std::string> Scenario, int Progress){
     std::cout<<Scenario[Progress];
     std::cin.clear();
@@ -72,9 +74,15 @@ public:
         TheEnemy.GetStats(TheEnemy,TheDatabase,ID);
 
     };
-    void ChosenDungeon(Database& TheDatabase, Enemy& TheEnemy,int Progress)
+    void ChosenDungeon(Database& TheDatabase, Enemy& TheEnemy,int Dungeon)
     {
-
+        std::vector<std::string>EnemyTypes=TheDatabase.DungeonEnemyTypes[Dungeon];
+        std::vector<std::vector<int>> EnemiesUsed=TheDatabase.InDungeon[Dungeon];
+        std::cout<<"\n The Necronomicon opens up and you see the list of those who wish to harm you... abominable or not\n";
+        for(int i=Progress; i<TheDatabase.InDungeon.size();i++)
+        {
+            std::cout<< i+1 <<". "<< EnemyTypes[i] <<" . HP: "<<EnemiesUsed[i][1]<<". DMG: "<<EnemiesUsed[i][2]<<". EXP: "<<EnemiesUsed[i][3]<<". Gold "<<EnemiesUsed[i][4]<<".\n";
+        };
     };
 private:
     Database &TheDatabase;

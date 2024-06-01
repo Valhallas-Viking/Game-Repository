@@ -22,6 +22,7 @@ int main()
     ERROR1:
     myHero.Indicator=0;
     TheDatabase.LoadHeroes(TheDatabase);
+    TheDatabase.LoadDungeonEnemies(TheDatabase);
     std::cout << R"(
          _    _      ______      ________ _____ _____            ______ _______   _____  _____  ______          __  __ _____ _   _  _____    _
       /\| |/\| |    / __ \ \    / /  ____/ ____|  __ \     /\   |  ____|__   __| |  __ \|  __ \|  ____|   /\   |  \/  |_   _| \ | |/ ____|/\| |/\
