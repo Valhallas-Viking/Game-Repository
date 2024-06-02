@@ -27,7 +27,7 @@ public:
     }
     void DefineBasics()
     {
-        DMG=1+(LV/1.5);
+        DMG=1+(LV/1.1);
         HP=10*LV;
         MaxHP=HP;
         totDMG=0;

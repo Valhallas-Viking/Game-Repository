@@ -14,25 +14,7 @@ public:
     int Progress;
     bool DidWin;
     bool GoToMain;
-    void DungeonFighting(Enemy &TheEnemy, Database &TheDatabase, std::vector<std::vector<int>> EnemiesUsed,std::vector<std::string> EnemyTypes, std::vector<std::string> Scenario, int Progress){
-    std::cout<<Scenario[Progress];
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n');
-    std::cout<<"\nINPUT NUMBER OF DESIRED ENEMY:\n";
-    for(int i=Progress;i<=EnemyTypes.size();i++)
-    {
-    std::cout<< i+1 <<". "<< EnemyTypes[i] <<" . HP: "<<EnemiesUsed[i][1]<<". DMG: "<<EnemiesUsed[i][2]<<". EXP: "<<EnemiesUsed[i][3]<<". Gold "<<EnemiesUsed[i][4]<<".\n";
-    }
-    WantToQuit=false;
-    std::cout<<"\nENTER 1 TO START FIGHT\nINPUT \"0\" TO EXIT DUNGEON\n";
-    int E;
-    std::cin>>E;
-    if(E==0){WantToQuit=true; goto Quitting;}
-    if(E>5){std::cout<<"INVALID INDEX"; goto Quitting;};
-    TheEnemy.GetStats(TheEnemy, TheDatabase, E-1);
-    TheFight.CurrentlyFighting(TheHero, TheEnemy);
-    Quitting:;
-    };
+    bool EndOfGame=false;
     void ChooseDungeon(){
     MainGame:
     WantToQuit=false;
@@ -72,6 +54,7 @@ public:
         return;
         }
         goto MainGame;
+        break;
     case 3:
         ChosenDungeon(TheDatabase, TheEnemy, 1);
         if(WantToQuit==true)
@@ -80,6 +63,8 @@ public:
         {
         return;
         }
+        goto MainGame;
+        break;
     case 4:
         ChosenDungeon(TheDatabase, TheEnemy, 2);
         if(WantToQuit==true)
@@ -88,6 +73,7 @@ public:
         {
         return;
         }
+        break;
     default:
         std::cout<<"\nINVALID INPUT\n";
         goto MainGame;
@@ -118,7 +104,13 @@ public:
                 TheHero.LVUP(TheHero);
                 TheDatabase.UpdateProgress(TheDatabase,Dungeon);
                 TheHero.UpdateHero(TheDatabase);
-                if(Progress==5){TheDatabase.Reward(TheDatabase,Dungeon);}
+                if(Progress==5){TheDatabase.Reward(TheDatabase,Dungeon); if(Dungeon==2)
+                    {
+                        std::cout<<"\nAs you finally see a great gash in the elder god Azathoth's nigh incomprehensible form a passage from the Necronomicon burns bright.\n \"Azathoth The Blind Idiot God: The being whose dream is responsible for the entire existance of the universe and if ever awoken will cease the universes existance\"\nAs you read this your foe begins to awake-";
+                        TheDatabase.EndOfGame();
+                        abort();
+                    };
+                }
                 break;
             }
             std::cout<<TheEnemy._name<<"'s HP: "<<TheEnemy.HP-TheEnemy.totDMG<<std::endl;

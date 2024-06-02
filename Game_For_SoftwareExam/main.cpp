@@ -85,8 +85,8 @@ int main()
     std::cout<<"Suddenly something scurries out from under your bed and you begin to feel drowzy...\n *Press enter to continue*";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // I have to write this to make the "Press enter to continue" work as it removes all former input which would trigger the other code
     std::cout<<"A... Rat? No a thing that looks like a rat with a human head and features runs out from under your bed and attacks you\n";
-    std::cout<<TheEnemy._name<<"\nHP: "<<TheEnemy.HP<<" Damage: "<<TheEnemy.DMG;
     TheEnemy.GetStats(TheEnemy,TheDatabase,0);
+    std::cout<<TheEnemy._name<<"\nHP: "<<TheEnemy.HP<<" Damage: "<<TheEnemy.DMG;
     TheFight.CurrentlyFighting(myHero,TheEnemy);
     if(TheFight.DidWin==false)
     {

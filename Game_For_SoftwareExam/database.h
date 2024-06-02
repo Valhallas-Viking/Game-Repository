@@ -95,7 +95,7 @@ public:
         QSqlQuery query(_db);
         query.prepare("DELETE FROM HERO WHERE id_Hero=:id_hero");
         query.bindValue(":id_hero",HeroSave[Save][0]);
-        DeleteProgress(HeroSave[Save][0],Save);
+        DeleteProgress(HeroSave[Save][0]);
         if(!query.exec())
         {
             qDebug()<<"Selected invalid ID exitting to menu"<<query.lastError().text(); break;
@@ -109,7 +109,21 @@ public:
         }
         }while(true);
     }
-    void DeleteProgress(int HeroID, int WhichHero)
+    void EndOfGame()
+    {
+        do{
+        QSqlQuery query(_db);
+        query.prepare("DELETE FROM HERO WHERE id_Hero=:id_hero");
+        query.bindValue(":id_hero",HeroStats[0]);
+        DeleteProgress(HeroStats[0]);
+        if(!query.exec())
+        {
+            qDebug()<<"ERROR DELETING UNIVERSE: "<<query.lastError().text(); break;
+        }
+        break;
+        }while(true);
+    }
+    void DeleteProgress(int HeroID)
     {
         QSqlQuery query(_db);
         query.prepare("DELETE FROM Progress WHERE id_Hero=:id_hero");
