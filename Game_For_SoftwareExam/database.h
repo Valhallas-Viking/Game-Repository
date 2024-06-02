@@ -43,6 +43,8 @@ public:
     int PlayerGold;
     int Progress;
     int DungeonID;
+    int RewardGold;
+    int RewardXP;
     std::string PlayerName;
     std::vector<std::string> HeroNames;
     std::vector<int> EnemyStats;
@@ -241,13 +243,40 @@ public:
         }
         InDungeon.push_back(HerosProgress);
         DungeonEnemyTypes.push_back(DungeonEnemyType);
+        HerosProgress.clear();
+        DungeonEnemyType.clear();
       }
+    };
+    void Reward(Database, int Dungeon)
+    {
+        QSqlQuery query(_db);
+        query.prepare("SELECT RewardGold, RewardXP FROM Dungeon WHERE DungeonID=:dungeonid AND RewardXP!=0");
+            query.bindValue(":dungeonid", Dungeon);
+
+            if (!query.exec()) {
+                qDebug() << "Reward not found ERROR: " << query.lastError().text();
+                return;
+            }
+
+            if (query.next()) {
+                int RewardGold = query.value(0).toInt();
+                int RewardXP = query.value(1).toInt();
+
+                std::cout << "\nYou have cleared this dungeon:\nGold:" << RewardGold << " + " << HeroStats[3] << " = ";
+                HeroStats[3] += RewardGold;
+                std::cout << HeroStats[3] << "\nXP: " << RewardXP << " + " << HeroStats[2] << " = ";
+                HeroStats[2] += RewardXP;
+                std::cout << HeroStats[2];
+            } else {
+                qDebug() << "No records found matching the criteria.";
+            }
     };
     void GetProgress(Database,int Dungeon)
     {
         QSqlQuery query(_db);
-            query.prepare("SELECT Progress From Progress WHERE DungeonID=:dungeonid");
+            query.prepare("SELECT Progress From Progress WHERE DungeonID=:dungeonid AND id_Hero=:idhero");
             query.bindValue(":dungeonid", Dungeon);
+            query.bindValue(":idhero", HeroStats[0]);
 
             if (query.exec()) {
                 if (query.next()) {  // Position the query on the first result record

@@ -74,10 +74,20 @@ public:
         goto MainGame;
     case 3:
         ChosenDungeon(TheDatabase, TheEnemy, 1);
-        break;
+        if(WantToQuit==true)
+        {goto MainGame;};
+        if(DidWin==false)
+        {
+        return;
+        }
     case 4:
         ChosenDungeon(TheDatabase, TheEnemy, 2);
-        break;
+        if(WantToQuit==true)
+        {goto MainGame;};
+        if(DidWin==false)
+        {
+        return;
+        }
     default:
         std::cout<<"\nINVALID INPUT\n";
         goto MainGame;
@@ -108,6 +118,7 @@ public:
                 TheHero.LVUP(TheHero);
                 TheDatabase.UpdateProgress(TheDatabase,Dungeon);
                 TheHero.UpdateHero(TheDatabase);
+                if(Progress==5){TheDatabase.Reward(TheDatabase,Dungeon);}
                 break;
             }
             std::cout<<TheEnemy._name<<"'s HP: "<<TheEnemy.HP-TheEnemy.totDMG<<std::endl;
@@ -135,11 +146,13 @@ public:
         int Progress=TheDatabase.Progress;
         std::vector<std::string>EnemyTypes=TheDatabase.DungeonEnemyTypes[Dungeon];
         std::vector<std::vector<int>> EnemiesUsed=TheDatabase.InDungeon[Dungeon];
-        std::cout<<"\n The Necronomicon opens up and you see the list of those who wish to harm you... abominable or not\n";
-        for(int i=Progress; i<TheDatabase.HerosProgress.size();i++)
+        if(EnemiesUsed.size()-Progress==0){std::cout<<"\nYou wander aimlessly... nothing of use can be found...";}
+        if(EnemiesUsed.size()-Progress==0){std::cout<<"\n The Necronomicon opens up and you see the list of those who wish to harm you... abominable or not\n";}
+        for(int i=Progress; i<EnemiesUsed.size();i++)
         {
             std::cout<< i+1 <<". "<< EnemyTypes[i] <<" . HP: "<<EnemiesUsed[i][1]<<". DMG: "<<EnemiesUsed[i][2]<<". EXP: "<<EnemiesUsed[i][3]<<". Gold "<<EnemiesUsed[i][4]<<".\n";
         };
+        if(EnemiesUsed.size()-Progress==0){goto Quit;}
         std::cout<<"\nTO CONTINUE INPUT 1.\nTO QUIT TO HUB INPUT 0\n";
         std::cin>>E;
         switch(E)
