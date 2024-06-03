@@ -73,6 +73,7 @@ public:
         {
         return;
         }
+        goto MainGame;
         break;
     default:
         std::cout<<"\nINVALID INPUT\n";
@@ -103,8 +104,8 @@ public:
                 std::cout<<TheHero.EXP<<std::endl;
                 TheHero.LVUP(TheHero);
                 TheDatabase.UpdateProgress(TheDatabase,Dungeon);
-                TheHero.UpdateHero(TheDatabase);
-                if(Progress==5){TheDatabase.Reward(TheDatabase,Dungeon); if(Dungeon==2)
+               TheHero.UpdateHero(TheDatabase);
+                if(Progress==TheDatabase.InDungeon[Dungeon].size()-1){TheDatabase.Reward(TheDatabase,Dungeon); if(Dungeon==2)
                     {
                         std::cout<<"\nAs you finally see a great gash in the elder god Azathoth's nigh incomprehensible form a passage from the Necronomicon burns bright.\n \"Azathoth The Blind Idiot God: The being whose dream is responsible for the entire existance of the universe and if ever awoken will cease the universes existance\"\nAs you read this your foe begins to awake-";
                         TheDatabase.EndOfGame();

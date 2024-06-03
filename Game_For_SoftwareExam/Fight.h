@@ -61,6 +61,7 @@ public:
     std::cout<< i+1 <<". "<< EnemyTypes[i] <<" . HP: "<<EnemiesUsed[i][1]<<". DMG: "<<EnemiesUsed[i][2]<<". EXP: "<<EnemiesUsed[i][3]<<". Gold "<<EnemiesUsed[i][4]<<".\n";
     }
     WantToQuit=false;
+    DidWin=true;
     std::cout<<"INPUT \"0\" TO EXIT AREA HOUSE\n";
     int E;
     std::cin>>E;
